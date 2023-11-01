@@ -7,13 +7,12 @@ from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
 import handlers
-from bot.database import apply_metadata, restore_collection_from_bson
+from database import apply_metadata, restore_collection_from_bson
 
 load_dotenv()
 logger = logging.getLogger(__name__)
 bot = Bot(token=os.getenv("BOT_TOKEN"))
-dp = Dispatcher(bot)
-
+dp = Dispatcher()
 
 async def main():
     logging.basicConfig(
@@ -24,14 +23,12 @@ async def main():
 
     logger.info("Starting bot")
 
-    client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
-    db = client[os.getenv("MONGO_DB")]
-    collection = db[os.getenv("MONGO_COLLECTION")]
-    bson_file_path = "./data/sample_collection.bson"
-    metadata_file_path = "./data/sample_collections.metadata.json"
-    await restore_collection_from_bson(collection, bson_file_path)
-    await apply_metadata(collection, metadata_file_path)
+    bson_file_path = "../data/sample_collection.bson"
+    metadata_file_path = "../data/sample_collection.metadata.json"
+    await restore_collection_from_bson(bson_file_path)
     logger.info("Database is ready")
+    await apply_metadata(metadata_file_path)
+    logger.info("Metadata is ready")
 
     dp.include_router(handlers.router)
 
