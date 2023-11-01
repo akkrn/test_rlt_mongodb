@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 bot = Bot(token=os.getenv("BOT_TOKEN"))
 dp = Dispatcher()
 
+
 async def main():
     logging.basicConfig(
         level=logging.INFO,

@@ -26,6 +26,6 @@ async def apply_metadata(metadata_file_path: str) -> None:
         metadata = json.load(metadata_file)
         if "indexes" in metadata:
             for index in metadata["indexes"]:
-                keys = list(index['key'].items())
+                keys = list(index["key"].items())
                 await collection.create_index(keys)
             return
