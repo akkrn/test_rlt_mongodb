@@ -1,0 +1,17 @@
+version: '3'
+
+volumes:
+  mongo_data:
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    env_file: .env
+    volumes:
+      - mongo_data:/data/db
+  backend:
+    build: ./bot
+    env_file: .env
+    depends_on:
+      - mongo
