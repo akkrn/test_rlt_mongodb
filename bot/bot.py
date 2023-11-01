@@ -2,13 +2,17 @@ import asyncio
 import logging
 import os
 
-import motor
+from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
+from motor.motor_asyncio import AsyncIOMotorClient
 
 import handlers
-from loader import bot, db, dp
+from bot.database import apply_metadata, restore_collection_from_bson
 
 load_dotenv()
 logger = logging.getLogger(__name__)
+bot = Bot(token=os.getenv("BOT_TOKEN"))
+dp = Dispatcher(bot)
 
 
 async def main():
@@ -20,14 +24,14 @@ async def main():
 
     logger.info("Starting bot")
 
-    client = motor.motor_asyncio.AsyncIOMotorClient(os.getenv("MONGO_URI"))
+    client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
     db = client[os.getenv("MONGO_DB")]
-
-    # Paths to your BSON and JSON files
-    bson_file_path = './data/sample_collection.bson'
-    metadata_file_path = './data/sample_collections.metadata.json'
-
-    logger.info("Database is created")
+    collection = db[os.getenv("MONGO_COLLECTION")]
+    bson_file_path = "./data/sample_collection.bson"
+    metadata_file_path = "./data/sample_collections.metadata.json"
+    await restore_collection_from_bson(collection, bson_file_path)
+    await apply_metadata(collection, metadata_file_path)
+    logger.info("Database is ready")
 
     dp.include_router(handlers.router)
 

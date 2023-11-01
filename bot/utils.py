@@ -1,4 +1,2 @@
-
-
 def mongodb(text):
     pass
